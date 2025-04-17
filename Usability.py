@@ -102,6 +102,8 @@ def main():
     with tasks:
         st.header("Task Page")
 
+        name2 = st.text_input("Enter your name before beginning the task:")
+
         task_descriptions = {
             "Authorize App": "Log into Spotify and authorize the app to access your account.",
             "View & Filter Results": "Navigate through your top songs or artists and apply filters to specify results.",
@@ -126,13 +128,14 @@ def main():
         notes = st.text_area("Observer Notes")
 
         if st.button("Save Task Results"):
-            duration_val = st.session_state.get("task_duration", "")
+            duration_val = st.session_state.get("task_duration", None)
 
             data_dict = {
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "user": name2,
                 "task_name": selected_task,
                 "success": success,
-                "duration_seconds": duration_val,
+                "duration_seconds": duration_val if duration_val else "",
                 "confidence_rating": confidence,
                 "notes": notes
             }
@@ -185,6 +188,7 @@ def main():
                 st.dataframe(task_df)
 
                 avg_duration = task_df.groupby('success')['duration_seconds'].mean()
+                avg_duration_by_task = task_df.groupby('task_name')['duration_seconds'].mean()
                 avg_duration = avg_duration.reindex(['Yes', 'Partial', 'No'])
 
                 fig, ax = plt.subplots()
@@ -194,11 +198,21 @@ def main():
                 st.pyplot(fig)
 
                 fig2, ax2 = plt.subplots()
-                avg_duration.plot(kind='bar', ax=ax2, color=['green', 'orange', 'red'])
-                ax2.set_title('Average Task Completion Time by Status')
-                ax2.set_xlabel('Completion Status')
+                avg_duration_by_task.plot(kind='bar', ax=ax2, color='skyblue')
+                ax2.set_title('Average Task Completion Time by Task')
+                ax2.set_xlabel('Task Name')
                 ax2.set_ylabel('Average Time (seconds)')
                 st.pyplot(fig2)
+
+                for task, duration in avg_duration_by_task.items():
+                    st.write(f"**Average Time for {task}**: {duration:.2f} seconds")
+
+                fig3, ax3 = plt.subplots()
+                avg_duration.plot(kind='bar', ax=ax3, color=['green', 'orange', 'red'])
+                ax3.set_title('Average Task Completion Time by Status')
+                ax3.set_xlabel('Completion Status')
+                ax3.set_ylabel('Average Time (seconds)')
+                st.pyplot(fig3)
 
                 for status, duration in avg_duration.items():
                     st.write(f"**Average Time for {status}**: {duration:.2f} seconds")
