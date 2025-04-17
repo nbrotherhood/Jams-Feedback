@@ -150,8 +150,8 @@ def main():
         st.header("Exit Questionnaire")
 
         with st.form("exit_form"):
-            satisfaction = st.slider("Overall Satisfaction (1 = Very Low, 5 = Very High)", 1.0, 5.0)
-            difficulty = st.slider("Overall Difficulty (1 = Very Easy, 5 = Very Hard)", 1.0, 5.0)
+            satisfaction = st.slider("Overall Satisfaction (1 = Very Low, 5 = Very High)", 1.0, 5.0, step=0.1)
+            difficulty = st.slider("Overall Difficulty (1 = Very Easy, 5 = Very Hard)", 1.0, 5.0, step=0.1)
             open_feedback = st.text_area("Additional feedback or comments:")
 
             submitted_exit = st.form_submit_button("Submit Exit Questionnaire")
